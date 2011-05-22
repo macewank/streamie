@@ -285,6 +285,69 @@ require.def("stream/initplugins",
         }
       },
       
+      // 
+      embedly: {        
+        func: function embedly (stream, plugin) {
+          var target = $('#embed');
+          var width;
+          function resize() {
+            width = $(window).width() - 535;
+            target.css('width', width);
+            target.css('height', $(window).height() - 85);
+          }
+          resize();
+          $(window).bind('resize', resize);
+          
+          $('#stream').delegate('a.link', 'click', function(e) {
+            if(e.button == 0) {
+              e.preventDefault();
+              var a = $(this);
+              var href = a.attr('href');
+              
+              target.html('Loading...');
+              var api_url = 'http://api.embed.ly/1/oembed?maxwidth=' + width + '&url=' + encodeURIComponent(href) + '&callback=?';
+              //jQuery JSON call
+              
+              var iframe = document.createElement('iframe');
+              iframe.width = '100%';
+              iframe.height = '100%';
+              iframe.src = a.attr('href');
+              
+              var $iframe = $(iframe);
+              $iframe.hide();
+              $('body').append($iframe);
+              
+              
+              $.getJSON( api_url, function(obj) {
+                if(!obj.html && obj.type != "photo") {
+                  $iframe.remove();
+                  $iframe.show();
+                  iframe.sandbox = true;
+                  target.html($iframe);
+                } else {
+                  var embed = obj.html;
+                  if(obj.type == "photo") {
+                    embed = new Image();
+                    embed.src = obj.url;
+                  }
+                  target.html(embed);
+                  $iframe.remove();
+                }
+              });
+              
+              /*a.embedly({
+                maxWidth: win.width() - 530,
+                key: "3e6705182cbb11e088ae4040f9f86dcd",
+                success: function(embedly) {
+                  target.html(embedly.code);
+                  target.css("top", win.scrollTop() + 80 + "px");
+                }
+              });*/
+            }
+          })
+        }
+      },
+      
       // Use the REST API to load the users's friends timeline, mentions and friends's retweets into the stream
       // this also happens when we detect that the user was offline for a while
       prefillTimeline: {

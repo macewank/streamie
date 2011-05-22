@@ -323,6 +323,7 @@ require.def("stream/streamplugins",
         HASH_TAG_RE:    /(^|\s)\#(\S+)/g,
         func: function formatTweetText (tweet, stream, plugin) {
           var text = tweet.textHTML;
+<<<<<<< HEAD
           var urls;
           if(tweet.data.entities) {
             urls = tweet.data.entities.urls; // Twitter sends parsed URLs through the new tweet entities.
@@ -342,6 +343,11 @@ require.def("stream/streamplugins",
               }
             });
             return '<a href="'+helpers.html(targetURL)+'">'+helpers.html(displayURL)+'</a>';
+=======
+          
+          text = text.replace(plugin.GRUBERS_URL_RE, function(url){
+            return '<a class="link" href="'+((/^\w+\:\//.test(url)?'':'http://')+helpers.html(url))+'">'+helpers.html(url)+'</a>';
+>>>>>>> aeaeb4f040e7f4cbb385a1b34870639217ee66d2
           })
 					
           // screen names
